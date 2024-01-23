@@ -18,9 +18,19 @@ define("app", ["require", "exports", "axios"], function (require, exports, axios
         const apiUrl = GET_GOOGLE_API_URL(enteredAddress, API_KEY);
         axios_1.default.get(apiUrl)
             .then(r => {
-            console.log(r);
+            if (r.data.status !== 'OK') {
+                throw new Error('Could not fetch Location!');
+            }
+            const coordinates = r.data.results[0].geometry.location;
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: coordinates,
+                zoom: 8,
+            });
+            new google.maps.Marker({ position: coordinates, map: map });
+            console.log(coordinates);
         })
             .catch(e => {
+            alert(e.message);
             console.log(e);
         });
     }
